@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Saúde em Foco</title>
+<meta name="theme-color" content="#0B4F4A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#123634;
+    --ink-soft:#3f5b58;
+    --bg:#F4FAF8;
+    --surface:#FFFFFF;
+    --surface-soft:#EAF4F1;
+    --primary:#0B4F4A;
+    --primary-dark:#083836;
+    --accent:#3FA796;
+    --accent-soft:#D8F0E9;
+    --good:#2F9E68;
+    --good-soft:#E2F5EA;
+    --warn:#E3A008;
+    --warn-soft:#FCEFCF;
+    --alert:#DD5B41;
+    --alert-soft:#FBE6E0;
+    --line:#DCEAE6;
+    --shadow: 0 10px 30px -14px rgba(11,79,74,0.28);
+    --shadow-sm: 0 4px 14px -8px rgba(11,79,74,0.25);
+    --radius-lg: 26px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+    --maxw: 1180px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4,.display{
+    font-family:'Sora',system-ui,sans-serif;
+    color:var(--primary-dark);
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;line-height:1.55;color:var(--ink-soft);}
+  button{font-family:inherit;}
+  a{color:inherit;text-decoration:none;}
+  ::selection{background:var(--accent-soft);}
+
+  /* ---------- App shell ---------- */
+  #app{
+    display:flex;
+    min-height:100vh;
+  }
+  .sidebar{
+    display:none;
+    width:264px;
+    flex-shrink:0;
+    background:var(--surface);
+    border-right:1px solid var(--line);
+    padding:28px 20px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    flex-direction:column;
+    gap:6px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:6px 10px 26px 10px;
+  }
+  .brand-mark{
+    width:38px;height:38px;border-radius:11px;
+    background:linear-gradient(155deg,var(--primary) 0%, var(--accent) 100%);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .brand-mark svg{width:20px;height:20px;}
+  .brand-name{font-family:'Sora';font-weight:700;font-size:17px;color:var(--primary-dark);line-height:1.1;}
+  .brand-sub{font-size:11px;color:var(--ink-soft);}
+
+  .nav-item{
+    display:flex;align-items:center;gap:13px;
+    padding:12px 14px;border-radius:14px;
+    cursor:pointer;
+    color:var(--ink-soft);
+    font-weight:600;font-size:14.5px;
+    transition:background .18s ease, color .18s ease;
+    border:none;background:none;width:100%;text-align:left;
+  }
+  .nav-item svg{width:19px;height:19px;flex-shrink:0;}
+  .nav-item:hover{background:var(--surface-soft);color:var(--primary-dark);}
+  .nav-item.active{background:var(--primary);color:#fff;}
+  .sidebar-foot{
+    margin-top:auto;
+    padding:14px;
+    border-radius:16px;
+    background:var(--surface-soft);
+    font-size:12.5px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+
+  main{
+    flex:1;
+    min-width:0;
+    padding-bottom:100px;
+  }
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 20px 10px 20px;
+    position:sticky;top:0;
+    background:rgba(244,250,248,0.92);
+    backdrop-filter:blur(8px);
+    z-index:20;
+  }
+  .topbar .brand{padding:0;}
+  .topbar-actions{display:flex;gap:8px;}
+  .icon-btn{
+    width:38px;height:38px;border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--surface);border:1px solid var(--line);
+    cursor:pointer;color:var(--primary-dark);
+  }
+  .icon-btn svg{width:18px;height:18px;}
+
+  .view{
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding:6px 18px 30px 18px;
+    display:none;
+  }
+  .view.active{
+    display:block;
+    animation: viewIn .42s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes viewIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  /* ---------- Bottom nav (mobile) ---------- */
+  .bottom-nav{
+    position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
+    width:calc(100% - 28px);
+    max-width:460px;
+    background:var(--primary-dark);
+    border-radius:22px;
+    display:flex;
+    padding:8px;
+    box-shadow:0 16px 34px -12px rgba(8,56,54,0.55);
+    z-index:50;
+  }
+  .bn-item{
+    flex:1;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    padding:9px 4px;border-radius:16px;
+    background:none;border:none;color:rgba(255,255,255,0.62);
+    cursor:pointer;font-size:11px;font-weight:600;font-family:'Inter';
+    transition:background .2s ease, color .2s ease;
+  }
+  .bn-item svg{width:19px;height:19px;}
+  .bn-item.active{background:rgba(255,255,255,0.14);color:#fff;}
+
+  /* ---------- Pulse divider ---------- */
+  .pulse-divider{width:100%;height:26px;margin:6px 0 18px 0;opacity:.55;}
+  .pulse-divider path{
+    fill:none;stroke:var(--accent);stroke-width:2.2;
+    stroke-linecap:round;stroke-linejoin:round;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    background:linear-gradient(150deg,var(--primary) 0%, #0E6259 62%, var(--accent) 130%);
+    border-radius:var(--radius-lg);
+    padding:34px 26px 30px 26px;
+    color:#fff;
+    overflow:hidden;
+    margin-top:6px;
+  }
+  .hero-eyebrow{font-size:13px;font-weight:600;color:rgba(255,255,255,0.78);margin-bottom:10px;}
+  .hero h1{font-size:30px;color:#fff;font-weight:800;line-height:1.12;}
+  .hero p.lead{color:rgba(255,255,255,0.86);margin-top:10px;font-size:15px;max-width:420px;}
+  .hero-pulse{position:absolute;right:-10px;bottom:-6px;width:260px;opacity:.9;pointer-events:none;}
+  .hero-pulse path{fill:none;stroke:rgba(255,255,255,0.35);stroke-width:2.4;stroke-linecap:round;}
+  .hero-cta{
+    margin-top:20px;display:inline-flex;align-items:center;gap:9px;
+    background:#fff;color:var(--primary-dark);
+    padding:12px 20px;border-radius:14px;font-weight:700;font-size:14.5px;
+    box-shadow:0 10px 22px -8px rgba(0,0,0,0.25);
+    border:none;cursor:pointer;
+  }
+
+  /* ---------- Cards grid ---------- */
+  .section-title{display:flex;align-items:baseline;justify-content:space-between;margin:30px 0 14px 0;}
+  .section-title h2{font-size:19px;font-weight:700;}
+  .section-title span{font-size:12.5px;color:var(--ink-soft);}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:14px;}
+  @media(min-width:640px){.grid.cols-2{grid-template-columns:1fr 1fr;}}
+  @media(min-width:900px){.grid.cols-3{grid-template-columns:1fr 1fr 1fr;} .grid.cols-2{grid-template-columns:1fr 1fr;}}
+
+  .nav-card{
+    background:var(--surface);
+    border-radius:var(--radius-md);
+    padding:20px;
+    display:flex;align-items:center;gap:16px;
+    border:1px solid var(--line);
+    cursor:pointer;
+    transition:transform .22s cubic-bezier(.2,.7,.3,1), box-shadow .22s ease, border-color .22s ease;
+  }
+  .nav-card:hover, .nav-card:focus-visible{
+    transform:translateY(-3px);
+    box-shadow:var(--shadow);
+    border-color:transparent;
+  }
+  .nav-card .emoji{
+    width:52px;height:52px;border-radius:15px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;background:var(--surface-soft);
+  }
+  .nav-card .txt h3{font-size:15.5px;font-weight:700;}
+  .nav-card .txt p{font-size:13px;margin-top:3px;}
+  .nav-card .chev{margin-left:auto;color:var(--ink-soft);flex-shrink:0;}
+  .nav-card .chev svg{width:18px;height:18px;}
+
+  /* card tint variants */
+  .tint-teal .emoji{background:#E1F1EE;color:var(--primary);}
+  .tint-rose .emoji{background:#FBE9E4;color:var(--alert);}
+  .tint-amber .emoji{background:var(--warn-soft);color:#8a5c04;}
+  .tint-green .emoji{background:var(--good-soft);color:var(--good);}
+
+  /* ---------- QR card ---------- */
+  .qr-card{
+    margin-top:16px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius-md);
+    padding:20px;
+    display:flex;align-items:center;gap:18px;
+  }
+  .qr-box{
+    width:78px;height:78px;border-radius:14px;flex-shrink:0;
+    background:
+      repeating-linear-gradient(90deg, var(--primary-dark) 0 6px, transparent 6px 12px),
+      repeating-linear-gradient(0deg, var(--primary-dark) 0 6px, transparent 6px 12px);
+    background-blend-mode:multiply;
+    background-color:#fff;
+    border:1px solid var(--line);
+    position:relative;
+  }
+  .qr-box::before, .qr-box::after{
+    content:'';position:absolute;width:20px;height:20px;border:5px solid var(--primary-dark);border-radius:5px;
+  }
+  .qr-box::before{top:6px;left:6px;}
+  .qr-box::after{bottom:6px;right:6px;}
+  .qr-card h4{font-size:14.5px;font-weight:700;}
+  .qr-card p{font-size:12.8px;margin-top:4px;}
+
+  /* ---------- Page header (sub pages) ---------- */
+  .page-head{padding-top:10px;margin-bottom:6px;}
+  .back-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:600;color:var(--ink-soft);
+    background:none;border:none;cursor:pointer;padding:6px 0;margin-bottom:10px;
+  }
+  .back-btn svg{width:16px;height:16px;}
+  .page-head .tag{
+    display:inline-block;font-size:12px;font-weight:700;color:var(--primary);
+    background:var(--accent-soft);padding:5px 12px;border-radius:100px;margin-bottom:12px;
+  }
+  .page-head h1{font-size:25px;font-weight:800;line-height:1.15;}
+  .page-head p.sub{margin-top:8px;font-size:14.5px;max-width:520px;}
+
+  /* ---------- Info card ---------- */
+  .info-card{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius-md);padding:20px;
+  }
+  .info-card h3{font-size:15.5px;font-weight:700;margin-bottom:9px;}
+  .info-card p{font-size:14px;}
+  .info-card + .info-card{margin-top:14px;}
+
+  /* ---------- Small feature cards (fatores de risco, sintomas...) ---------- */
+  .chip-card{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:16px;padding:15px;
+    display:flex;flex-direction:column;gap:9px;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .chip-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);}
+  .chip-card .ic{
+    width:36px;height:36px;border-radius:10px;background:var(--surface-soft);
+    display:flex;align-items:center;justify-content:center;font-size:17px;
+  }
+  .chip-card span{font-size:13.3px;font-weight:600;color:var(--ink);}
+
+  /* ---------- Scale / classification bar ---------- */
+  .scale-wrap{margin-top:6px;}
+  .scale-bar{
+    display:flex;width:100%;height:14px;border-radius:100px;overflow:hidden;margin-bottom:10px;
+  }
+  .scale-bar div{height:100%;}
+  .scale-rows{display:flex;flex-direction:column;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);}
+  .scale-row{
+    display:grid;grid-template-columns:14px 1fr auto;gap:12px;align-items:center;
+    padding:13px 14px;background:var(--surface);
+    border-bottom:1px solid var(--line);
+  }
+  .scale-row:last-child{border-bottom:none;}
+  .scale-dot{width:12px;height:12px;border-radius:50%;}
+  .scale-row .lab{font-size:13.6px;font-weight:600;color:var(--ink);}
+  .scale-row .val{font-size:13px;font-weight:700;color:var(--ink-soft);white-space:nowrap;}
+
+  /* ---------- Accordion ---------- */
+  .accordion{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface);}
+  .acc-item + .acc-item{border-top:1px solid var(--line);}
+  .acc-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:15px 16px;cursor:pointer;font-weight:700;font-size:14px;
+  }
+  .acc-head svg{width:16px;height:16px;transition:transform .25s ease;flex-shrink:0;}
+  .acc-item.open .acc-head svg{transform:rotate(180deg);}
+  .acc-body{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+  .acc-item.open .acc-body{max-height:400px;}
+  .acc-body-in{padding:0 16px 16px 16px;font-size:13.6px;color:var(--ink-soft);line-height:1.6;}
+
+  /* ---------- Alert banner ---------- */
+  .banner{
+    display:flex;gap:12px;align-items:flex-start;
+    background:var(--surface-soft);border:1px solid var(--line);
+    border-radius:16px;padding:15px 16px;margin-top:18px;
+  }
+  .banner svg{width:20px;height:20px;color:var(--primary);flex-shrink:0;margin-top:1px;}
+  .banner p{font-size:13px;}
+
+  /* ---------- UBS triage ---------- */
+  .triage-card{border-radius:var(--radius-md);padding:19px;color:#fff;}
+  .triage-card h3{color:#fff;font-size:16.5px;font-weight:800;display:flex;align-items:center;gap:8px;}
+  .triage-card ul{margin:12px 0 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px;}
+  .triage-card li{font-size:13.6px;line-height:1.5;padding-left:18px;position:relative;color:rgba(255,255,255,0.95);}
+  .triage-card li::before{content:'';position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:#fff;opacity:.85;}
+  .triage-good{background:linear-gradient(155deg,#2F9E68,#1F7C51);}
+  .triage-warn{background:linear-gradient(155deg,#E3A008,#B87C03);}
+  .triage-alert{background:linear-gradient(155deg,#DD5B41,#B93F28);}
+
+  /* ---------- Profile / history ---------- */
+  .profile-card{
+    background:linear-gradient(150deg,var(--primary) 0%, #0E6259 100%);
+    border-radius:var(--radius-lg);color:#fff;padding:24px;
+  }
+  .profile-top{display:flex;align-items:center;gap:14px;}
+  .avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;}
+  .profile-top h3{color:#fff;font-size:16.5px;font-weight:700;}
+  .profile-top span{font-size:12.5px;color:rgba(255,255,255,0.75);}
+  .profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;}
+  .pstat{background:rgba(255,255,255,0.13);border-radius:14px;padding:13px 14px;}
+  .pstat .l{font-size:11.5px;color:rgba(255,255,255,0.75);font-weight:600;}
+  .pstat .v{font-size:19px;font-weight:800;margin-top:3px;}
+
+  .filter-row{display:flex;gap:8px;overflow-x:auto;margin:18px 0 4px 0;padding-bottom:2px;}
+  .filter-chip{
+    flex-shrink:0;padding:9px 15px;border-radius:100px;font-size:12.8px;font-weight:600;
+    background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;
+    transition:background .18s ease,color .18s ease,border-color .18s ease;
+  }
+  .filter-chip.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+
+  .chart-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);padding:18px;margin-top:16px;}
+  .chart-card h4{font-size:14.5px;font-weight:700;margin-bottom:2px;}
+  .legend-row{display:flex;gap:16px;margin-top:10px;}
+  .legend-dot{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft);font-weight:600;}
+  .legend-dot i{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  .history-item{
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:15px 16px;display:flex;flex-direction:column;gap:8px;
+  }
+  .history-item + .history-item{margin-top:10px;}
+  .hi-top{display:flex;justify-content:space-between;align-items:center;}
+  .hi-date{font-size:13px;font-weight:700;}
+  .hi-obs{font-size:11.5px;background:var(--surface-soft);color:var(--primary-dark);padding:4px 10px;border-radius:100px;font-weight:600;}
+  .hi-vals{display:flex;gap:18px;}
+  .hi-val .l{font-size:11px;color:var(--ink-soft);font-weight:600;}
+  .hi-val .v{font-size:15px;font-weight:700;margin-top:1px;}
+
+  .interpret-card{
+    background:var(--surface);border:1px dashed var(--accent);border-radius:var(--radius-md);
+    padding:18px;margin-top:16px;position:relative;
+  }
+  .interpret-card .tag2{font-size:11.5px;font-weight:700;color:var(--accent);text-transform:none;margin-bottom:8px;display:block;}
+  .interpret-card p{font-size:13.8px;color:var(--ink);}
+  .interpret-card p.note{margin-top:10px;font-size:12.4px;color:var(--ink-soft);}
+
+  /* ---------- Prevention tip cards ---------- */
+  .tip-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:9px;}
+  .tip-card .ic{width:42px;height:42px;border-radius:12px;background:var(--surface-soft);display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .tip-card h4{font-size:14.5px;font-weight:700;}
+  .tip-card p{font-size:12.8px;}
+
+  .footer-note{
+    margin:34px 0 10px 0;text-align:center;font-size:12px;color:var(--ink-soft);opacity:.85;
+  }
+
+  /* Desktop layout */
+  @media(min-width:960px){
+    .sidebar{display:flex;}
+    .bottom-nav{display:none;}
+    .topbar{display:none;}
+    main{padding-bottom:40px;}
+    .view{padding:34px 40px;}
+    .hero{padding:44px 42px;}
+    .hero h1{font-size:36px;}
+  }
+  @media(max-width:959px){
+    .desktop-only{display:none;}
+  }
+
+  [data-fade]{animation:fadeUp .5s cubic-bezier(.2,.8,.2,1) both;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- SIDEBAR (desktop) -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2 6 4-14 2 8h6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">Saúde em Foco</div>
+        <div class="brand-sub">Programa de saúde do colaborador</div>
+      </div>
+    </div>
+    <button class="nav-item" data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11.5 12 4l8 7.5M6 10v9h5v-5h2v5h5v-9"/></svg>Início</button>
+    <button class="nav-item" data-view="hipertensao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 6 4-14 2 8h6"/></svg>Hipertensão</button>
+    <button class="nav-item" data-view="diabetes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="7"/><path d="M12 3v3M9 3.5l1 2.6M15 3.5l-1 2.6"/></svg>Diabetes</button>
+    <button class="nav-item" data-view="historico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5m5 14V9m5 10V12m5 7V6"/></svg>Meu histórico</button>
+    <button class="nav-item" data-view="ubs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M9 5h6M4 10h16v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V10Z"/></svg>Quando procurar a UBS</button>
+    <button class="nav-item" data-view="prevencao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-9C.7 8.1 3 4 7 4c2 0 3.8 1.1 5 3 1.2-1.9 3-3 5-3 4 0 6.3 4.1 4.5 8-2.5 4.65-9.5 9-9.5 9Z"/></svg>Prevenção e saúde</button>
+    <div class="sidebar-foot">Este dashboard tem finalidade educativa e não substitui uma avaliação realizada por profissional de saúde.</div>
+  </aside>
+
+  <main>
+    <!-- topbar mobile -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2 6 4-14 2 8h6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div class="brand-name">Saúde em Foco</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" title="Compartilhar" onclick="shareApp()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8 15.8 6.7M8.2 13.2l7.6 4.1"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= HOME ================= -->
+    <section class="view active" id="view-home">
+      <div class="hero">
+        <div class="hero-eyebrow">Programa de saúde do colaborador</div>
+        <h1>Saúde em Foco</h1>
+        <p class="lead">Informação, prevenção e acompanhamento da sua saúde, em um só lugar, feito para o seu celular.</p>
+        <button class="hero-cta" onclick="showView('hipertensao')">
+          Começar por aqui
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <svg class="hero-pulse" viewBox="0 0 260 60"><path d="M0 30 H70 L84 8 L100 52 L114 30 H150 L162 18 L174 42 L184 30 H260"/></svg>
+      </div>
+
+      <div class="section-title"><h2>O que você quer ver hoje?</h2></div>
+      <div class="grid">
+        <div class="nav-card tint-teal" onclick="showView('hipertensao')">
+          <div class="emoji">🩺</div>
+          <div class="txt"><h3>Hipertensão</h3><p>Entenda sua pressão arterial</p></div>
+          <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="nav-card tint-rose" onclick="showView('diabetes')">
+          <div class="emoji">🩸</div>
+          <div class="txt"><h3>Diabetes e glicemia</h3><p>Conheça seus níveis de glicose</p></div>
+          <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="nav-card tint-teal" onclick="showView('historico')">
+          <div class="emoji">📊</div>
+          <div class="txt"><h3>Meu histórico</h3><p>Acompanhe suas avaliações</p></div>
+          <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="nav-card tint-amber" onclick="showView('ubs')">
+          <div class="emoji">🚨</div>
+          <div class="txt"><h3>Quando procurar a UBS?</h3><p>Saiba quando buscar atendimento</p></div>
+          <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="nav-card tint-green" onclick="showView('prevencao')">
+          <div class="emoji">💚</div>
+          <div class="txt"><h3>Prevenção e saúde</h3><p>Hábitos que ajudam a cuidar da sua saúde</p></div>
+          <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+      </div>
+
+      <div class="qr-card">
+        <div class="qr-box"></div>
+        <div>
+          <h4>Cuide da sua saúde</h4>
+          <p>Escaneie o QR Code disponibilizado pela empresa e acesse seu conteúdo de saúde direto do celular, sem precisar instalar nada.</p>
+        </div>
+      </div>
+
+      <div class="footer-note">Este dashboard tem finalidade educativa e não substitui uma avaliação realizada por profissional de saúde.</div>
+    </section>
+
+    <!-- ================= HIPERTENSAO ================= -->
+    <section class="view" id="view-hipertensao">
+      <div class="page-head">
+        <button class="back-btn" onclick="showView('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg>Início</button>
+        <span class="tag">Saúde do coração</span>
+        <h1>Hipertensão arterial</h1>
+        <p class="sub">Entenda o que é a pressão alta, como ela é medida e o que você pode fazer para cuidar dela no dia a dia.</p>
+      </div>
+
+      <div class="info-card">
+        <h3>O que é hipertensão?</h3>
+        <p>A pressão arterial é a força que o sangue faz contra a parede das artérias enquanto circula pelo corpo. Quando essa pressão fica constantemente acima do esperado, chamamos de hipertensão arterial. Ela costuma se desenvolver aos poucos e, por isso, merece acompanhamento contínuo, mesmo quando a pessoa se sente bem.</p>
+      </div>
+
+      <div class="section-title"><h2>Fatores de risco</h2><span>Toque para saber mais</span></div>
+      <div class="grid cols-3" id="risco-hipertensao"></div>
+
+      <div class="section-title"><h2>Sinais e sintomas</h2></div>
+      <div class="info-card">
+        <p>Na maior parte das vezes, a hipertensão não causa nenhum sintoma perceptível, por isso é chamada de "assassina silenciosa". Quando aparecem, sinais como dor de cabeça persistente, tontura, zumbido no ouvido, visão embaçada ou sangramento nasal podem estar relacionados a valores muito elevados de pressão e merecem avaliação com um profissional de saúde o quanto antes.</p>
+      </div>
+
+      <div class="section-title"><h2>Valores da pressão arterial</h2><span>Referência SBC</span></div>
+      <div class="info-card scale-wrap">
+        <div class="scale-bar">
+          <div style="flex:1.2;background:#2F9E68"></div>
+          <div style="flex:1;background:#7CC98E"></div>
+          <div style="flex:1;background:#E3A008"></div>
+          <div style="flex:1;background:#EE8A3B"></div>
+          <div style="flex:1;background:#DD5B41"></div>
+          <div style="flex:0.8;background:#B93F28"></div>
+        </div>
+        <div class="scale-rows">
+          <div class="scale-row"><div class="scale-dot" style="background:#2F9E68"></div><div class="lab">Ótima</div><div class="val">&lt; 120 x 80 mmHg</div></div>
+          <div class="scale-row"><div class="scale-dot" style="background:#7CC98E"></div><div class="lab">Normal</div><div class="val">120-129 x 80-84 mmHg</div></div>
+          <div class="scale-row"><div class="scale-dot" style="background:#E3A008"></div><div class="lab">Pré-hipertensão (limítrofe)</div><div class="val">130-139 x 85-89 mmHg</div></div>
+          <div class="scale-row"><div class="scale-dot" style="background:#EE8A3B"></div><div class="lab">Hipertensão estágio 1</div><div class="val">140-159 x 90-99 mmHg</div></div>
+          <div class="scale-row"><div class="scale-dot" style="background:#DD5B41"></div><div class="lab">Hipertensão estágio 2</div><div class="val">160-179 x 100-109 mmHg</div></div>
+          <div class="scale-row"><div class="scale-dot" style="background:#B93F28"></div><div class="lab">Hipertensão estágio 3</div><div class="val">≥ 180 x 110 mmHg</div></div>
+        </div>
+        <p class="note" style="margin-top:12px;font-size:12px;">Valores de referência com base nas diretrizes brasileiras de hipertensão arterial. O diagnóstico depende de mais de uma medição, feita em momentos diferentes, e deve ser confirmado por um profissional de saúde.</p>
+      </div>
+
+      <div class="section-title"><h2>Como prevenir e controlar</h2></div>
+      <div class="grid cols-3" id="prevencao-hipertensao"></div>
+
+      <div class="section-title"><h2>Quando procurar atendimento?</h2></div>
+      <div class="triage-card triage-warn">
+        <h3>🟡 Vale procurar a UBS</h3>
+        <ul>
+          <li>Pressão repetidamente acima de 140 x 90 mmHg em diferentes momentos</li>
+          <li>Dor de cabeça frequente sem causa aparente</li>
+          <li>Histórico familiar de hipertensão e nunca fez avaliação</li>
+        </ul>
+      </div>
+      <div style="height:10px"></div>
+      <div class="triage-card triage-alert">
+        <h3>🔴 Procure atendimento de urgência</h3>
+        <ul>
+          <li>Pressão muito elevada (a partir de 180 x 120 mmHg) associada a dor no peito, falta de ar, confusão mental ou alteração da fala</li>
+          <li>Dor de cabeça súbita e muito intensa, diferente do habitual</li>
+        </ul>
+      </div>
+
+      <div class="banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <p>Este conteúdo é educativo e não tem como objetivo diagnosticar. Uma avaliação isolada não é suficiente para confirmar hipertensão, converse sempre com um profissional de saúde.</p>
+      </div>
+    </section>
+
+    <!-- ================= DIABETES ================= -->
+    <section class="view" id="view-diabetes">
+      <div class="page-head">
+        <button class="back-btn" onclick="showView('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg>Início</button>
+        <span class="tag">Açúcar no sangue</span>
+        <h1>Diabetes e glicemia</h1>
+        <p class="sub">Entenda como funciona o açúcar no sangue, os principais sinais de alerta e como acompanhar sua glicemia com segurança.</p>
+      </div>
+
+      <div class="info-card">
+        <h3>O que é diabetes?</h3>
+        <p>O diabetes é uma condição em que o corpo tem dificuldade de manter o nível de glicose (açúcar) no sangue dentro da faixa esperada. Com o tempo, a glicose elevada de forma persistente pode afetar vasos sanguíneos, olhos, rins e nervos, por isso o acompanhamento regular é tão importante.</p>
+      </div>
+      <div class="info-card">
+        <h3>O que é glicemia?</h3>
+        <p>Glicemia é a quantidade de glicose presente no sangue em um determinado momento. Ela varia ao longo do dia, principalmente após as refeições, e por isso costuma ser medida em situações específicas, como em jejum ou algumas horas depois de comer.</p>
+      </div>
+
+      <div class="section-title"><h2>Fatores de risco</h2></div>
+      <div class="grid cols-3" id="risco-diabetes"></div>
+
+      <div class="section-title"><h2>Sintomas</h2></div>
+      <div class="grid cols-3" id="sintomas-diabetes"></div>
+
+      <div class="section-title"><h2>Valores de glicemia</h2><span>Referência SBD</span></div>
+      <div class="accordion" id="acc-glicemia"></div>
+      <div class="info-card" style="margin-top:14px;">
+        <p>Uma única medição de glicemia capilar feita durante uma ação de saúde na empresa não estabelece, sozinha, um diagnóstico de diabetes. Ela é um retrato daquele momento e serve como ponto de partida para conversar com um profissional de saúde, que poderá solicitar exames complementares se necessário.</p>
+      </div>
+
+      <div class="section-title"><h2>Prevenção</h2></div>
+      <div class="grid cols-3" id="prevencao-diabetes"></div>
+
+      <div class="banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <p>Este conteúdo é educativo e não tem como objetivo diagnosticar. Vale procurar a UBS sempre que houver dúvida sobre seus resultados.</p>
+      </div>
+    </section>
+
+    <!-- ================= HISTORICO ================= -->
+    <section class="view" id="view-historico">
+      <div class="page-head">
+        <button class="back-btn" onclick="showView('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg>Início</button>
+        <span class="tag">Área individual (demonstração)</span>
+        <h1>Meu acompanhamento</h1>
+        <p class="sub">Aqui você encontra o histórico das suas avaliações realizadas nas ações de saúde da empresa. Dados fictícios, para fins de demonstração.</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-top">
+          <div class="avatar">AS</div>
+          <div>
+            <h3>Ana Beatriz Souza</h3>
+            <span>Última avaliação em 10/10/2026</span>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="pstat"><div class="l">Última pressão</div><div class="v">138 x 86 mmHg</div></div>
+          <div class="pstat"><div class="l">Última glicemia</div><div class="v">110 mg/dL</div></div>
+        </div>
+      </div>
+
+      <div class="interpret-card">
+        <span class="tag2">Entenda seus resultados</span>
+        <p>Na sua última avaliação, sua pressão arterial foi de 138 x 86 mmHg e sua glicemia foi de 110 mg/dL. Esses resultados estão na faixa de atenção e merecem acompanhamento com um profissional de saúde.</p>
+        <p class="note">Lembre-se: uma avaliação isolada não é suficiente para estabelecer um diagnóstico. Vale procurar a UBS para conversar sobre esses resultados.</p>
+      </div>
+
+      <div class="section-title"><h2>Histórico de avaliações</h2></div>
+      <div class="filter-row" id="filtros-historico">
+        <button class="filter-chip" data-f="ultima">Última avaliação</button>
+        <button class="filter-chip" data-f="3m">Últimos 3 meses</button>
+        <button class="filter-chip active" data-f="6m">Últimos 6 meses</button>
+        <button class="filter-chip" data-f="tudo">Todo o histórico</button>
+      </div>
+
+      <div id="lista-historico"></div>
+
+      <div class="chart-card">
+        <h4>Evolução da pressão arterial e glicemia</h4>
+        <p style="font-size:12px;">Gráfico demonstrativo com dados fictícios</p>
+        <canvas id="graficoEvolucao" height="190"></canvas>
+        <div class="legend-row">
+          <div class="legend-dot"><i style="background:#0B4F4A"></i>Pressão sistólica</div>
+          <div class="legend-dot"><i style="background:#3FA796"></i>Glicemia</div>
+        </div>
+      </div>
+
+      <div class="banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a4 4 0 1 0-4-4"/><path d="M12 19v2M5 12H3M21 12h-2M6.3 17.7l-1.4 1.4M19.1 6.3l-1.4 1.4M6.3 6.3 4.9 4.9M19.1 17.7l-1.4-1.4"/></svg>
+        <p>Esta é uma área individual e protegida. Em uma versão futura, o acesso a esses dados exigirá login ou outra forma segura de identificação, mesmo que o funcionário já tenha escaneado o QR Code público.</p>
+      </div>
+    </section>
+
+    <!-- ================= UBS ================= -->
+    <section class="view" id="view-ubs">
+      <div class="page-head">
+        <button class="back-btn" onclick="showView('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg>Início</button>
+        <span class="tag">Orientação</span>
+        <h1>Quando procurar a Unidade Básica de Saúde?</h1>
+        <p class="sub">Use este guia rápido para entender o que pode ser acompanhado na rotina e o que pede uma avaliação mais próxima.</p>
+      </div>
+
+      <div class="triage-card triage-good" style="margin-top:6px;">
+        <h3>🟢 Acompanhar</h3>
+        <ul>
+          <li>Pressão e glicemia dentro da faixa normal, sem sintomas</li>
+          <li>Hábitos de vida em ajuste, como início de atividade física ou mudança na alimentação</li>
+          <li>Retorno de rotina já orientado por um profissional de saúde</li>
+        </ul>
+      </div>
+      <div style="height:10px"></div>
+      <div class="triage-card triage-warn">
+        <h3>🟡 Atenção</h3>
+        <ul>
+          <li>Pressão repetidamente acima de 140 x 90 mmHg</li>
+          <li>Glicemia de jejum entre 100 e 125 mg/dL</li>
+          <li>Sintomas leves e persistentes, como cansaço, sede fora do comum ou dor de cabeça frequente</li>
+        </ul>
+      </div>
+      <div style="height:10px"></div>
+      <div class="triage-card triage-alert">
+        <h3>🔴 Urgência</h3>
+        <ul>
+          <li>Pressão a partir de 180 x 120 mmHg com dor no peito, falta de ar ou confusão mental</li>
+          <li>Sinais de alerta como fraqueza súbita de um lado do corpo, alteração da fala ou da visão</li>
+          <li>Glicemia muito alterada associada a mal-estar intenso, vômitos ou sonolência excessiva</li>
+        </ul>
+      </div>
+
+      <div class="banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <p>Este dashboard tem finalidade educativa e não substitui uma avaliação realizada por profissional de saúde. Em caso de dúvida, procure a UBS mais próxima.</p>
+      </div>
+    </section>
+
+    <!-- ================= PREVENCAO ================= -->
+    <section class="view" id="view-prevencao">
+      <div class="page-head">
+        <button class="back-btn" onclick="showView('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg>Início</button>
+        <span class="tag">Hábitos saudáveis</span>
+        <h1>Prevenção e saúde</h1>
+        <p class="sub">Pequenos hábitos, mantidos com constância, fazem grande diferença na sua saúde ao longo do tempo.</p>
+      </div>
+
+      <div class="grid cols-3" id="dicas-prevencao"></div>
+    </section>
+
+    <div class="bottom-nav">
+      <button class="bn-item active" data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11.5 12 4l8 7.5M6 10v9h5v-5h2v5h5v-9"/></svg>Início</button>
+      <button class="bn-item" data-view="hipertensao" data-hub="saude"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 6 4-14 2 8h6"/></svg>Saúde</button>
+      <button class="bn-item" data-view="historico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5m5 14V9m5 10V12m5 7V6"/></svg>Histórico</button>
+      <button class="bn-item" data-view="ubs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M9 5h6M4 10h16v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V10Z"/></svg>Orientações</button>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ---------------- Navegação ---------------- */
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.view===id));
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.toggle('active', b.dataset.view===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.nav-item, .bn-item').forEach(btn=>{
+  btn.addEventListener('click',()=>showView(btn.dataset.view));
+});
+
+function shareApp(){
+  if(navigator.share){
+    navigator.share({title:'Saúde em Foco', text:'Confira o programa de saúde da empresa.', url:location.href});
+  }else{
+    alert('Copie o link do QR Code e compartilhe com o colaborador.');
+  }
+}
+
+/* ---------------- Dados de conteúdo ---------------- */
+const riscoHipertensao=[
+  ['🛋️','Sedentarismo'],['🍟','Alimentação inadequada'],['🧂','Excesso de sal'],
+  ['⚖️','Sobrepeso/obesidade'],['🚬','Tabagismo'],['🍷','Consumo excessivo de álcool'],
+  ['🧬','Histórico familiar'],['🎂','Idade'],['🌀','Estresse']
+];
+const prevencaoHipertensao=[
+  ['🥗','Alimentação saudável'],['🧂','Redução do sal'],['🏃','Atividade física'],
+  ['⚖️','Controle do peso'],['🚭','Não fumar'],['🍷','Moderar álcool'],
+  ['🩺','Acompanhamento profissional'],['💊','Uso correto de medicamentos, quando prescritos']
+];
+const riscoDiabetes=[
+  ['🧬','Histórico familiar'],['⚖️','Sobrepeso/obesidade'],['🛋️','Sedentarismo'],
+  ['🍟','Alimentação inadequada'],['🎂','Idade'],['🩺','Hipertensão']
+];
+const sintomasDiabetes=[
+  ['💧','Sede excessiva'],['🚻','Urina frequente'],['🍽️','Fome aumentada'],
+  ['😴','Cansaço'],['📉','Perda de peso inexplicada'],['👁️','Visão turva']
+];
+const prevencaoDiabetes=[
+  ['🥗','Alimentação equilibrada'],['🏃','Atividade física'],['⚖️','Controle do peso'],
+  ['😴','Sono adequado'],['🩺','Acompanhamento de saúde']
+];
+const dicasPrevencao=[
+  ['🥗','Alimentação','Prefira alimentos in natura e reduza sal, açúcar e ultraprocessados no dia a dia.'],
+  ['🏃','Atividade física','Busque pelo menos 150 minutos de movimento por semana, em ritmo confortável para você.'],
+  ['💧','Hidratação','Manter uma boa ingestão de água ao longo do dia ajuda o corpo a funcionar melhor.'],
+  ['😴','Sono','Dormir de 7 a 9 horas por noite favorece a pressão arterial e o controle da glicemia.'],
+  ['🚭','Não fumar','Parar de fumar reduz o risco cardiovascular já nas primeiras semanas.'],
+  ['⚖️','Controle do peso','Pequenas mudanças sustentáveis valem mais do que dietas radicais e temporárias.'],
+  ['🧘','Saúde mental','Cuidar do estresse com pausas, respiração e lazer também cuida do coração.'],
+  ['🩺','Acompanhamento periódico','Fazer check-ups regulares ajuda a identificar alterações cedo, quando são mais fáceis de tratar.']
+];
+
+function renderChips(containerId, items){
+  const el=document.getElementById(containerId);
+  el.innerHTML=items.map(([ic,label])=>`
+    <div class="chip-card"><div class="ic">${ic}</div><span>${label}</span></div>
+  `).join('');
+}
+renderChips('risco-hipertensao', riscoHipertensao);
+renderChips('prevencao-hipertensao', prevencaoHipertensao);
+renderChips('risco-diabetes', riscoDiabetes);
+renderChips('sintomas-diabetes', sintomasDiabetes);
+renderChips('prevencao-diabetes', prevencaoDiabetes);
+
+document.getElementById('dicas-prevencao').innerHTML=dicasPrevencao.map(([ic,t,p])=>`
+  <div class="tip-card"><div class="ic">${ic}</div><h4>${t}</h4><p>${p}</p></div>
+`).join('');
+
+/* ---------------- Accordion glicemia ---------------- */
+const glicemiaItems=[
+  {t:'Glicemia de jejum', b:'Normal: abaixo de 100 mg/dL. Pré-diabetes: de 100 a 125 mg/dL. Diabetes: 126 mg/dL ou mais, confirmado em duas ocasiões diferentes.'},
+  {t:'Glicemia casual', b:'Medida feita a qualquer hora do dia, sem jejum. Valores de 200 mg/dL ou mais, associados a sintomas, podem indicar diabetes e merecem avaliação profissional.'},
+  {t:'Teste oral de tolerância à glicose (TOTG)', b:'Após 2 horas do teste: normal abaixo de 140 mg/dL, pré-diabetes de 140 a 199 mg/dL, diabetes 200 mg/dL ou mais.'},
+  {t:'Hemoglobina glicada (HbA1c)', b:'Reflete a média da glicemia nos últimos 2 a 3 meses. Normal abaixo de 5,7%, pré-diabetes de 5,7% a 6,4%, diabetes a partir de 6,5%.'}
+];
+document.getElementById('acc-glicemia').innerHTML=glicemiaItems.map((it,i)=>`
+  <div class="acc-item${i===0?' open':''}">
+    <div class="acc-head" onclick="toggleAcc(this)">${it.t}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="acc-body"><div class="acc-body-in">${it.b}</div></div>
+  </div>
+`).join('');
+function toggleAcc(head){
+  const item=head.parentElement;
+  const wasOpen=item.classList.contains('open');
+  item.parentElement.querySelectorAll('.acc-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen) item.classList.add('open');
+}
+
+/* ---------------- Histórico fictício ---------------- */
+const historicoDados=[
+  {data:'10/09/2026', sist:145, dia:92, gli:118, obs:'Avaliação realizada'},
+  {data:'10/10/2026', sist:138, dia:86, gli:110, obs:'Acompanhamento'},
+  {data:'12/11/2025', sist:150, dia:94, gli:124, obs:'Avaliação realizada'},
+  {data:'15/07/2025', sist:132, dia:84, gli:102, obs:'Acompanhamento'},
+  {data:'20/03/2025', sist:128, dia:80, gli:98, obs:'Avaliação realizada'},
+];
+let chartRef=null;
+function renderHistorico(filtro){
+  let dados=historicoDados;
+  if(filtro==='ultima') dados=historicoDados.slice(0,1);
+  else if(filtro==='3m') dados=historicoDados.slice(0,2);
+  else if(filtro==='6m') dados=historicoDados.slice(0,3);
+  const lista=document.getElementById('lista-historico');
+  lista.innerHTML=dados.map(d=>`
+    <div class="history-item">
+      <div class="hi-top"><span class="hi-date">${d.data}</span><span class="hi-obs">${d.obs}</span></div>
+      <div class="hi-vals">
+        <div class="hi-val"><div class="l">Pressão</div><div class="v">${d.sist} x ${d.dia} mmHg</div></div>
+        <div class="hi-val"><div class="l">Glicemia</div><div class="v">${d.gli} mg/dL</div></div>
+      </div>
+    </div>
+  `).join('');
+
+  const ordenado=[...dados].reverse();
+  const ctx=document.getElementById('graficoEvolucao');
+  if(chartRef) chartRef.destroy();
+  chartRef=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:ordenado.map(d=>d.data),
+      datasets:[
+        {label:'Pressão sistólica', data:ordenado.map(d=>d.sist), borderColor:'#0B4F4A', backgroundColor:'rgba(11,79,74,0.08)', tension:.35, fill:true, pointRadius:4},
+        {label:'Glicemia', data:ordenado.map(d=>d.gli), borderColor:'#3FA796', backgroundColor:'rgba(63,167,150,0.08)', tension:.35, fill:true, pointRadius:4}
+      ]
+    },
+    options:{
+      plugins:{legend:{display:false}},
+      scales:{y:{beginAtZero:false, grid:{color:'#EAF4F1'}}, x:{grid:{display:false}}},
+      responsive:true
+    }
+  });
+}
+renderHistorico('6m');
+document.querySelectorAll('.filter-chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    renderHistorico(chip.dataset.f);
+  });
+});
+</script>
+</body>
+</html>
