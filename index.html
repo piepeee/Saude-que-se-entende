@@ -853,7 +853,7 @@
         <button class="calc-btn" id="admin-entrar" onclick="entrarAdmin()">Entrar</button>
         <div class="calc-result" id="admin-msg"></div>
         <div class="demo-note" id="demo-note" style="display:none;">
-          <strong>Modo demonstração.</strong> Os envios ficam apenas neste aparelho e a senha de teste é <strong>saude2026</strong>. Para uso real, conecte o banco de dados (a URL é configurada no início do script do arquivo) e defina uma senha própria.
+          <strong>Modo demonstração.</strong> Os envios ficam apenas neste aparelho e a senha de teste é <strong>demo-local</strong>. Para uso real, conecte o banco de dados (a URL é configurada no início do script do arquivo) e defina uma senha própria.
         </div>
       </div>
 
@@ -1169,8 +1169,8 @@ if(listaUbs){
 /* ---------------- Aferições anônimas e administração ---------------- */
 /* Para uso real, cole aqui a URL do aplicativo web do Google Apps Script.
    Enquanto estiver vazia, o site funciona em modo demonstração (dados só neste aparelho). */
-const CONFIG = { BACKEND_URL: '' };
-const DEMO_SENHA = 'saude2026';
+const CONFIG = { BACKEND_URL: 'https://script.google.com/macros/s/AKfycbw9eQUHMZEzsotZqIuxp0ZdPmTjkSLHOQdr8eo6tIWRIIMhkTY8lnXTIh2FQtGORjBp/exec' };
+const DEMO_SENHA = 'demo-local';
 const LS_KEY = 'sef_registros_demo';
 const modoDemo = !CONFIG.BACKEND_URL;
 
