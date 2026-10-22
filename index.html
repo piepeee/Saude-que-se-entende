@@ -546,6 +546,27 @@
   }
 
   [data-fade]{animation:fadeUp .5s cubic-bezier(.2,.8,.2,1) both;}
+
+  /* ---------- Melhorias de uso ---------- */
+  body{zoom:var(--zoom,1);}
+  .topbar{background:rgba(255,255,255,0.92);}
+  .fs-ctrl{display:flex;gap:6px;align-items:center;}
+  .fs-btn{height:38px;min-width:38px;padding:0 10px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--primary-dark);font-weight:700;cursor:pointer;font-family:'Sora',sans-serif;}
+  .fs-btn:hover{background:var(--accent-soft);}
+  .sidebar .fs-ctrl{padding:10px 14px 0 14px;}
+  .sidebar .fs-lbl{font-size:12px;color:var(--ink-soft);margin-right:4px;}
+  .sos{display:flex;gap:12px;align-items:center;margin:14px 0 4px;padding:14px 16px;border-radius:var(--radius-md);background:var(--alert-soft);border:1px solid #F3C4B8;}
+  .sos svg{width:26px;height:26px;flex:none;color:var(--alert);}
+  .sos p{font-size:13.5px;color:var(--ink);}
+  .sos a{display:inline-block;margin-top:6px;background:var(--alert);color:#fff;font-weight:700;padding:8px 14px;border-radius:999px;font-size:14px;}
+  .toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center;}
+  .toast.show{opacity:1;}
+  .offline-bar{display:none;background:var(--warn-soft);color:var(--ink);text-align:center;font-size:13px;padding:8px 12px;}
+  .offline-bar.show{display:block;}
+  :focus-visible{outline:3px solid var(--primary);outline-offset:2px;border-radius:8px;}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
+  @media print{.sidebar,.topbar,.bottom-nav,.back-btn,.toast,.sos,.calc-btn,.btn-ghost{display:none!important;}
+    body{zoom:1;} .view{display:none!important;} .view.active{display:block!important;}}
 </style>
 </head>
 <body>
@@ -567,10 +588,12 @@
     <button class="nav-item" data-view="ubs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M9 5h6M4 10h16v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V10Z"/></svg>Quando procurar a UBS</button>
     <button class="nav-item" data-view="prevencao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-9C.7 8.1 3 4 7 4c2 0 3.8 1.1 5 3 1.2-1.9 3-3 5-3 4 0 6.3 4.1 4.5 8-2.5 4.65-9.5 9-9.5 9Z"/></svg>Prevenção e saúde</button>
     <button class="nav-item" data-view="admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Administração</button>
+    <div class="fs-ctrl"><span class="fs-lbl">Tamanho do texto</span><button class="fs-btn" aria-label="Diminuir texto" onclick="tamanhoTexto(-1)">A-</button><button class="fs-btn" aria-label="Aumentar texto" onclick="tamanhoTexto(1)">A+</button></div>
     <div class="sidebar-foot">Este dashboard tem finalidade educativa e não substitui uma avaliação realizada por profissional de saúde.</div>
   </aside>
 
   <main>
+    <div class="offline-bar" id="offline-bar">Sem conexão com a internet. Você pode ler o conteúdo, mas o envio de aferições precisa de internet.</div>
     <!-- topbar mobile -->
     <div class="topbar">
       <div class="brand">
@@ -580,6 +603,7 @@
         </div>
       </div>
       <div class="topbar-actions">
+        <div class="fs-ctrl"><button class="fs-btn" title="Diminuir texto" aria-label="Diminuir texto" onclick="tamanhoTexto(-1)">A-</button><button class="fs-btn" title="Aumentar texto" aria-label="Aumentar texto" onclick="tamanhoTexto(1)">A+</button></div>
         <button class="icon-btn" title="Compartilhar" onclick="shareApp()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8 15.8 6.7M8.2 13.2l7.6 4.1"/></svg>
         </button>
@@ -597,6 +621,11 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
         </button>
         <svg class="hero-pulse" viewBox="0 0 260 60"><path d="M0 30 H70 L84 8 L100 52 L114 30 H150 L162 18 L174 42 L184 30 H260"/></svg>
+      </div>
+
+      <div class="sos" role="note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/></svg>
+        <div><p><strong>Sintomas graves?</strong> Dor forte no peito, falta de ar, fraqueza de um lado do corpo, fala enrolada ou confusão. Não espere: ligue para o SAMU.</p><a href="tel:192">Ligar 192 (SAMU)</a></div>
       </div>
 
       <div class="section-title"><h2>O que você quer ver hoje?</h2></div>
@@ -891,6 +920,11 @@
         <p class="sub">Use este guia rápido para entender o que pode ser acompanhado na rotina e o que pede uma avaliação mais próxima.</p>
       </div>
 
+      <div class="sos" role="note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/></svg>
+        <div><p><strong>Sintomas graves?</strong> Dor forte no peito, falta de ar, fraqueza de um lado do corpo, fala enrolada ou confusão. Não espere: ligue para o SAMU.</p><a href="tel:192">Ligar 192 (SAMU)</a></div>
+      </div>
+
       <div class="triage-card triage-good" style="margin-top:6px;">
         <h3>🟢 Acompanhar</h3>
         <ul>
@@ -964,24 +998,67 @@ const favicon = document.getElementById('favicon-link');
 if(favicon) favicon.href = LOGO_DATA_URI;
 
 /* ---------------- Navegação ---------------- */
-function showView(id){
+function showView(id, deHistorico){
+  if(!document.getElementById('view-'+id)) id='home';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.view===id));
   document.querySelectorAll('.bn-item').forEach(b=>b.classList.toggle('active', b.dataset.view===id));
   window.scrollTo({top:0,behavior:'smooth'});
+  if(!deHistorico && location.hash !== '#'+id){
+    try{ history.pushState(null,'', '#'+id); }catch(e){}
+  }
 }
+window.addEventListener('popstate', ()=> showView(location.hash.slice(1) || 'home', true));
 document.querySelectorAll('.nav-item, .bn-item').forEach(btn=>{
   btn.addEventListener('click',()=>showView(btn.dataset.view));
 });
 
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2600);
+}
 function shareApp(){
+  const url = location.origin + location.pathname;
   if(navigator.share){
-    navigator.share({title:'Saúde que se Entende', text:'Confira o programa de saúde da empresa.', url:location.href});
+    navigator.share({title:'Saúde que se Entende', text:'Confira o programa de saúde da empresa.', url:url}).catch(()=>{});
+  }else if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(()=>toast('Link copiado'), ()=>toast(url));
   }else{
-    alert('Copie o link do QR Code e compartilhe com o colaborador.');
+    toast(url);
   }
 }
+
+/* ----- Tamanho do texto ----- */
+const ZOOMS=[0.9,1,1.15,1.3];
+let zoomIdx=1;
+try{ const v=parseInt(localStorage.getItem('sef_zoom'),10); if(v>=0 && v<ZOOMS.length) zoomIdx=v; }catch(e){}
+function aplicarZoom(){ document.documentElement.style.setProperty('--zoom', ZOOMS[zoomIdx]); }
+function tamanhoTexto(d){
+  zoomIdx=Math.max(0,Math.min(ZOOMS.length-1,zoomIdx+d));
+  aplicarZoom();
+  try{ localStorage.setItem('sef_zoom', String(zoomIdx)); }catch(e){}
+}
+aplicarZoom();
+
+/* ----- Enter envia os campos, aviso offline, abertura por link ----- */
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Enter' || e.target.tagName!=='INPUT') return;
+  const card=e.target.closest('.calc-card'); if(!card) return;
+  const b=card.querySelector('.calc-btn'); if(b && !b.disabled){ e.preventDefault(); b.click(); }
+});
+function atualizarOffline(){ document.getElementById('offline-bar').classList.toggle('show', !navigator.onLine); }
+window.addEventListener('online', atualizarOffline); window.addEventListener('offline', atualizarOffline);
+atualizarOffline();
+if(location.hash.length>1) showView(location.hash.slice(1), true);
+
+/* ----- Administração: sair sozinho após 10 minutos sem uso ----- */
+let ultimoUso=Date.now();
+['click','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{ultimoUso=Date.now();},{passive:true}));
+setInterval(()=>{
+  const painel=document.getElementById('admin-panel');
+  if(painel && painel.style.display!=='none' && Date.now()-ultimoUso>10*60*1000){ sairAdmin(); toast('Sessão da administração encerrada por inatividade'); }
+},30000);
 
 /* ---------------- Dados de conteúdo ---------------- */
 const riscoHipertensao=[
@@ -1428,5 +1505,6 @@ document.getElementById('admin-senha').addEventListener('keydown', e => { if(e.k
 if(modoDemo){ document.getElementById('demo-note').style.display = 'block'; }
 
 </script>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
