@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Saúde que se Entende</title>
 <meta name="theme-color" content="#E0759B">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link id="favicon-link" rel="icon" type="image/jpeg" href="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -567,6 +569,35 @@
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
   @media print{.sidebar,.topbar,.bottom-nav,.back-btn,.toast,.sos,.calc-btn,.btn-ghost{display:none!important;}
     body{zoom:1;} .view{display:none!important;} .view.active{display:block!important;}}
+
+  /* ---------- QR, privacidade, graficos, instalar ---------- */
+  .qr-real{width:96px;height:96px;flex-shrink:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;}
+  .qr-real svg{display:block;}
+  .consent{margin-top:14px;padding:12px 14px;border-radius:var(--radius-sm);background:var(--surface-soft);border:1px solid var(--line);}
+  .consent label{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--ink);line-height:1.45;cursor:pointer;}
+  .consent input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--primary-dark);}
+  details.priv{margin-top:10px;font-size:13px;color:var(--ink-soft);}
+  details.priv summary{cursor:pointer;font-weight:600;color:var(--primary-dark);}
+  details.priv ul{margin:8px 0 0;padding-left:18px;line-height:1.5;}
+  .install-card{display:none;margin-top:14px;padding:14px 16px;border-radius:var(--radius-md);background:var(--accent-soft);border:1px solid var(--line);align-items:center;gap:12px;}
+  .install-card.show{display:flex;}
+  .install-card p{font-size:13.5px;color:var(--ink);flex:1;}
+  .install-card button{background:var(--primary-dark);color:#fff;border:0;border-radius:999px;padding:9px 16px;font-weight:700;cursor:pointer;}
+  .charts{display:grid;grid-template-columns:1fr;gap:14px;margin:14px 0;}
+  @media(min-width:760px){.charts{grid-template-columns:1fr 1fr;}}
+  .chart-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);padding:16px;}
+  .chart-card h3{font-size:15px;margin-bottom:10px;}
+  .bars{display:flex;align-items:flex-end;gap:4px;height:120px;}
+  .bars .b{flex:1;background:var(--primary);border-radius:6px 6px 0 0;min-height:2px;position:relative;}
+  .bars .b span{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:10px;color:var(--ink-soft);}
+  .bar-lbls{display:flex;gap:4px;margin-top:4px;}
+  .bar-lbls span{flex:1;text-align:center;font-size:9.5px;color:var(--ink-soft);}
+  .hrow{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:12.5px;color:var(--ink);}
+  .hrow .n{width:110px;flex:none;}
+  .hrow .t{flex:1;height:12px;background:var(--surface-soft);border-radius:999px;overflow:hidden;}
+  .hrow .t i{display:block;height:100%;border-radius:999px;}
+  .hrow .c{width:26px;text-align:right;font-weight:700;}
+  @media print{.install-card{display:none!important;}}
 </style>
 </head>
 <body>
@@ -628,6 +659,11 @@
         <div><p><strong>Sintomas graves?</strong> Dor forte no peito, falta de ar, fraqueza de um lado do corpo, fala enrolada ou confusão. Não espere: ligue para o SAMU.</p><a href="tel:192">Ligar 192 (SAMU)</a></div>
       </div>
 
+      <div class="install-card" id="install-card">
+        <p id="install-txt">Instale o site no seu celular para abrir como um aplicativo.</p>
+        <button id="install-btn" onclick="instalarApp()">Instalar</button>
+      </div>
+
       <div class="section-title"><h2>O que você quer ver hoje?</h2></div>
       <div class="grid">
         <div class="nav-card tint-teal" onclick="showView('hipertensao')">
@@ -658,7 +694,7 @@
       </div>
 
       <div class="qr-card">
-        <div class="qr-box"></div>
+        <div class="qr-real"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" width="100%" height="100%" shape-rendering="crispEdges" role="img" aria-label="QR Code para acessar o site" class="segno"><path class="qrline" stroke="#b94a72" d="M0 0.5h7m1 0h1m5 0h5m4 0h1m2 0h7m-33 1h1m5 0h1m2 0h1m1 0h1m4 0h2m1 0h1m2 0h1m3 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m4 0h1m1 0h1m1 0h1m4 0h5m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h2m1 0h2m1 0h1m2 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h2m3 0h3m2 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h1m4 0h1m2 0h4m2 0h1m1 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h3m1 0h1m2 0h3m3 0h1m2 0h1m-25 1h1m3 0h1m1 0h3m3 0h1m3 0h4m1 0h9m2 0h1m-29 1h2m1 0h2m2 0h1m1 0h4m1 0h1m4 0h1m1 0h1m3 0h2m-31 1h2m1 0h1m1 0h3m1 0h1m2 0h1m2 0h1m1 0h1m3 0h1m1 0h1m1 0h2m2 0h1m1 0h1m-32 1h1m3 0h2m1 0h3m1 0h1m2 0h5m2 0h1m1 0h1m1 0h1m5 0h1m-32 1h1m1 0h2m2 0h6m1 0h2m3 0h1m1 0h2m2 0h1m1 0h1m1 0h2m1 0h2m-33 1h2m2 0h2m2 0h1m3 0h1m3 0h2m1 0h1m3 0h1m1 0h1m3 0h2m-30 1h2m1 0h1m1 0h1m1 0h2m3 0h1m2 0h1m1 0h2m1 0h1m1 0h4m1 0h1m2 0h1m-32 1h3m2 0h1m1 0h3m1 0h1m1 0h2m2 0h1m1 0h3m1 0h4m1 0h1m-27 1h2m2 0h1m1 0h2m5 0h1m1 0h1m2 0h2m4 0h1m1 0h1m2 0h1m-32 1h1m1 0h4m2 0h1m1 0h1m2 0h6m2 0h1m1 0h1m5 0h2m-30 1h1m2 0h1m1 0h1m1 0h1m1 0h1m1 0h1m2 0h1m2 0h1m4 0h3m1 0h1m1 0h1m1 0h1m-32 1h2m2 0h2m2 0h1m1 0h1m2 0h2m1 0h1m3 0h2m1 0h3m1 0h1m3 0h1m-31 1h1m1 0h2m1 0h1m4 0h4m1 0h1m2 0h1m4 0h1m1 0h1m1 0h2m-30 1h3m1 0h1m4 0h2m6 0h5m1 0h1m1 0h1m1 0h1m1 0h3m-26 1h1m3 0h1m1 0h4m1 0h1m2 0h1m2 0h1m7 0h1m-28 1h2m2 0h1m1 0h2m1 0h1m1 0h4m2 0h4m2 0h3m1 0h2m-33 1h2m3 0h2m1 0h1m4 0h1m2 0h2m1 0h1m1 0h2m1 0h5m-21 1h1m1 0h1m1 0h2m2 0h1m1 0h1m5 0h1m3 0h1m1 0h2m-32 1h7m1 0h1m1 0h2m1 0h1m1 0h1m1 0h1m2 0h3m1 0h1m1 0h1m1 0h2m-30 1h1m5 0h1m4 0h2m1 0h1m2 0h2m2 0h2m1 0h1m3 0h1m2 0h1m-32 1h1m1 0h3m1 0h1m1 0h4m2 0h2m2 0h1m1 0h1m3 0h6m2 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m1 0h1m1 0h1m2 0h2m1 0h1m3 0h2m1 0h4m1 0h1m-32 1h1m1 0h3m1 0h1m4 0h3m2 0h1m1 0h2m3 0h2m1 0h3m-29 1h1m5 0h1m3 0h3m4 0h5m2 0h3m-27 1h7m1 0h1m1 0h2m2 0h2m1 0h2m1 0h6m3 0h1m2 0h1"/></svg></div>
         <div>
           <h4>Cuide da sua saúde</h4>
           <p>Escaneie o QR Code disponibilizado pela empresa e acesse seu conteúdo de saúde direto do celular, sem precisar instalar nada.</p>
@@ -851,6 +887,20 @@
             <textarea id="env-obs" maxlength="200" rows="3" placeholder="Ex: medi depois de caminhar. Não escreva nome nem dados pessoais."></textarea>
           </div>
         </div>
+        <div class="consent">
+          <label><input type="checkbox" id="env-ok"><span>Entendo que estou enviando os valores de forma anônima e que não devo escrever nome ou dados pessoais.</span></label>
+          <details class="priv">
+            <summary>Como seus dados são tratados</summary>
+            <ul>
+              <li>Este formulário não pede nome, matrícula, telefone nem e-mail.</li>
+              <li>Guardamos apenas a data e hora do envio, os valores informados, o tipo de glicemia e a observação, se você escrever uma.</li>
+              <li>Os valores são usados pela equipe do programa de saúde para entender o conjunto dos colaboradores e planejar ações de prevenção.</li>
+              <li>O acesso aos registros é protegido por senha e restrito à equipe responsável.</li>
+              <li>Não escreva na observação nada que identifique você ou outra pessoa.</li>
+              <li>Enviar é voluntário. Você pode usar as calculadoras sem enviar nada.</li>
+            </ul>
+          </details>
+        </div>
         <button class="calc-btn" id="env-btn" onclick="enviarAfericao()">Enviar</button>
         <div class="calc-result" id="env-resultado"></div>
       </div>
@@ -902,6 +952,7 @@
           </div>
         </div>
         <div class="admin-stats" id="admin-stats"></div>
+        <div class="charts" id="admin-charts"></div>
         <div class="section-title"><h2>Registros enviados</h2><span id="admin-count"></span></div>
         <div id="admin-lista"></div>
         <div class="banner">
@@ -1051,6 +1102,29 @@ function atualizarOffline(){ document.getElementById('offline-bar').classList.to
 window.addEventListener('online', atualizarOffline); window.addEventListener('offline', atualizarOffline);
 atualizarOffline();
 if(location.hash.length>1) showView(location.hash.slice(1), true);
+
+
+/* ----- Instalar como app ----- */
+let eventoInstalar=null;
+const jaInstalado = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault(); eventoInstalar=e;
+  if(!jaInstalado) document.getElementById('install-card').classList.add('show');
+});
+window.addEventListener('appinstalled', ()=>{ document.getElementById('install-card').classList.remove('show'); toast('App instalado'); });
+if(!jaInstalado && /iphone|ipad|ipod/i.test(navigator.userAgent)){
+  document.getElementById('install-txt').textContent = 'Para instalar: toque em Compartilhar no Safari e depois em Adicionar à Tela de Início.';
+  document.getElementById('install-btn').style.display = 'none';
+  document.getElementById('install-card').classList.add('show');
+}
+function instalarApp(){
+  if(!eventoInstalar) return;
+  eventoInstalar.prompt();
+  eventoInstalar.userChoice.finally(()=>{ eventoInstalar=null; document.getElementById('install-card').classList.remove('show'); });
+}
+if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
+  window.addEventListener('load', ()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
 
 /* ----- Administração: sair sozinho após 10 minutos sem uso ----- */
 let ultimoUso=Date.now();
@@ -1290,6 +1364,7 @@ async function enviarAfericao(){
   const btn = document.getElementById('env-btn');
 
   const mostrarErro = msg => { box.className = 'calc-result show'; box.innerHTML = '<p>' + esc(msg) + '</p>'; };
+  if(!document.getElementById('env-ok').checked) return mostrarErro('Marque a caixa de ciência para enviar.');
 
   const temPressao = sis !== null || dia !== null;
   if(!temPressao && gli === null) return mostrarErro('Preencha a pressão, a glicemia ou os dois.');
@@ -1341,6 +1416,7 @@ async function enviarAfericao(){
   html += '<p class="note">Uma única medição não é suficiente para estabelecer um diagnóstico. Este resultado é educativo, vale conversar com um profissional de saúde ou procurar a UBS se tiver dúvidas.</p>';
   box.className = 'calc-result show'; box.innerHTML = html;
   ['env-sis','env-dia','env-gli','env-obs'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('env-ok').checked = false;
 }
 
 /* ----- Administração ----- */
@@ -1413,6 +1489,37 @@ function faixaPressaoDe(r){
   if(r.sis === null || r.dia === null) return null;
   return faixasPressao[Math.max(categoriaSistolica(r.sis), categoriaDiastolica(r.dia))];
 }
+
+function desenharGraficos(lista){
+  const el = document.getElementById('admin-charts');
+  if(!lista.length){ el.innerHTML = ''; return; }
+  // envios por dia, ultimos 14 dias
+  const dias = [];
+  for(let i = 13; i >= 0; i--){ const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - i); dias.push(d); }
+  const cont = dias.map(() => 0);
+  lista.forEach(r => {
+    const d = new Date(r.ts); if(isNaN(d)) return; d.setHours(0,0,0,0);
+    const idx = dias.findIndex(x => x.getTime() === d.getTime());
+    if(idx >= 0) cont[idx]++;
+  });
+  const max = Math.max.apply(null, cont.concat([1]));
+  const barras = cont.map(n => '<div class="b" style="height:' + Math.max(2, n / max * 100) + '%">' + (n ? '<span>' + n + '</span>' : '') + '</div>').join('');
+  const rotulos = dias.map((d,i) => '<span>' + (i % 2 === 0 ? String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') : '') + '</span>').join('');
+  // faixas de pressao
+  const faixas = {};
+  lista.forEach(r => { const f = faixaPressaoDe(r); if(f){ faixas[f.label] = faixas[f.label] || {n:0, cor:f.cor}; faixas[f.label].n++; } });
+  const totalP = Object.keys(faixas).reduce((a,k) => a + faixas[k].n, 0) || 1;
+  const linhas = Object.keys(faixas).map(k => '<div class="hrow"><span class="n">' + esc(k) + '</span><span class="t"><i style="width:' + (faixas[k].n / totalP * 100) + '%;background:' + faixas[k].cor + '"></i></span><span class="c">' + faixas[k].n + '</span></div>').join('') || '<p>Sem pressão informada no período.</p>';
+  // glicemia
+  const gl = {};
+  lista.forEach(r => { if(r.gli !== null){ const g = classificarGlicemia(r.gli, r.tipo); gl[g.label] = gl[g.label] || {n:0, cor:g.cor}; gl[g.label].n++; } });
+  const totalG = Object.keys(gl).reduce((a,k) => a + gl[k].n, 0) || 1;
+  const linhasG = Object.keys(gl).map(k => '<div class="hrow"><span class="n">' + esc(k) + '</span><span class="t"><i style="width:' + (gl[k].n / totalG * 100) + '%;background:' + gl[k].cor + '"></i></span><span class="c">' + gl[k].n + '</span></div>').join('') || '<p>Sem glicemia informada no período.</p>';
+  el.innerHTML =
+    '<div class="chart-card"><h3>Envios por dia (14 dias)</h3><div class="bars">' + barras + '</div><div class="bar-lbls">' + rotulos + '</div></div>' +
+    '<div class="chart-card"><h3>Pressão por faixa</h3>' + linhas + '<h3 style="margin-top:14px;">Glicemia por faixa</h3>' + linhasG + '</div>';
+}
+
 function renderAdmin(){
   const lista = registrosFiltrados();
   const comPressaoAtencao = lista.filter(r => r.sis !== null && Math.max(categoriaSistolica(r.sis), categoriaDiastolica(r.dia)) >= 2).length;
@@ -1421,6 +1528,7 @@ function renderAdmin(){
     '<div class="stat-tile"><div class="n">' + lista.length + '</div><div class="l">Envios no período</div></div>' +
     '<div class="stat-tile"><div class="n">' + comPressaoAtencao + '</div><div class="l">Pressão a partir de 140 x 90</div></div>' +
     '<div class="stat-tile"><div class="n">' + comGlicemiaAtencao + '</div><div class="l">Glicemia em atenção ou acima</div></div>';
+  desenharGraficos(lista);
   document.getElementById('admin-count').textContent = lista.length + (lista.length === 1 ? ' registro' : ' registros');
 
   const el = document.getElementById('admin-lista');
