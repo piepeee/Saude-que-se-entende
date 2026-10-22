@@ -9,7 +9,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <style>
   :root{
     --ink:#3A2430;
@@ -375,6 +374,63 @@
   .calc-result p{font-size:13.3px;margin-top:11px;color:var(--ink);}
   .calc-result p.note{margin-top:8px;font-size:12px;color:var(--ink-soft);}
 
+  /* ---------- Formulário, mapa e administração ---------- */
+  .calc-field{min-width:0;}
+  .calc-field input, .calc-field select, .calc-field textarea{width:100%;min-width:0;}
+  .calc-field textarea{
+    border:1.5px solid var(--line);border-radius:12px;
+    padding:12px 13px;font-size:14.5px;font-family:'Inter';color:var(--ink);
+    background:var(--bg);outline:none;resize:vertical;transition:border-color .18s ease;
+  }
+  .calc-field textarea:focus{border-color:var(--primary);}
+  .calc-btn[disabled]{opacity:.6;cursor:default;}
+  .calc-result .badge-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .demo-note{
+    margin-top:16px;background:var(--warn-soft);border-radius:14px;
+    padding:13px 14px;font-size:12.6px;color:#6b4a03;line-height:1.5;
+  }
+  .map-card{
+    margin-top:6px;border-radius:var(--radius-md);overflow:hidden;
+    border:1px solid var(--line);box-shadow:var(--shadow-sm);
+  }
+  .map-card iframe{width:100%;height:280px;border:0;display:block;}
+  .map-buttons{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 16px 0;}
+  .map-btn{
+    flex:1 1 180px;text-align:center;padding:12px 14px;border-radius:14px;
+    font-size:13.5px;font-weight:700;border:1.5px solid var(--primary);color:var(--primary-dark);
+    background:var(--surface);transition:background .18s ease, transform .18s ease;
+  }
+  .map-btn.primary{background:var(--primary);color:#fff;}
+  .map-btn:active{transform:scale(.98);}
+  .admin-bar{display:flex;flex-direction:column;gap:12px;margin-top:6px;}
+  .admin-actions{display:flex;flex-wrap:wrap;gap:8px;}
+  .btn-ghost{
+    border:1.5px solid var(--line);background:var(--surface);color:var(--primary-dark);
+    border-radius:12px;padding:9px 14px;font-size:12.8px;font-weight:700;cursor:pointer;
+    transition:border-color .18s ease, background .18s ease;
+  }
+  .btn-ghost:hover{border-color:var(--primary);background:var(--surface-soft);}
+  .admin-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:16px;}
+  .stat-tile{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;}
+  .stat-tile .n{font-family:'Sora';font-size:22px;font-weight:800;color:var(--primary-dark);}
+  .stat-tile .l{font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-top:3px;line-height:1.35;}
+  .rec-item{
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:14px 16px;display:flex;flex-direction:column;gap:10px;
+  }
+  .rec-item + .rec-item{margin-top:10px;}
+  .rec-top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .rec-date{font-size:13px;font-weight:700;}
+  .rec-vals{display:flex;flex-wrap:wrap;gap:16px;}
+  .rec-val .l{font-size:11px;color:var(--ink-soft);font-weight:600;}
+  .rec-val .v{font-size:15px;font-weight:700;margin-top:1px;}
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;color:#fff;font-weight:700;
+    font-size:11.5px;padding:4px 10px;border-radius:100px;margin-top:5px;
+  }
+  .rec-obs{font-size:12.6px;color:var(--ink-soft);background:var(--surface-soft);border-radius:10px;padding:8px 11px;}
+  @media(min-width:700px){.admin-bar{flex-direction:row;justify-content:space-between;align-items:center;}}
+
   /* ---------- UBS ---------- */
   .map-note{font-size:12px;color:var(--ink-soft);margin-top:10px;}
   .ubs-item{
@@ -507,9 +563,10 @@
     <button class="nav-item" data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11.5 12 4l8 7.5M6 10v9h5v-5h2v5h5v-9"/></svg>Início</button>
     <button class="nav-item" data-view="hipertensao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 6 4-14 2 8h6"/></svg>Hipertensão</button>
     <button class="nav-item" data-view="diabetes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="7"/><path d="M12 3v3M9 3.5l1 2.6M15 3.5l-1 2.6"/></svg>Diabetes</button>
-    <button class="nav-item" data-view="historico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5m5 14V9m5 10V12m5 7V6"/></svg>Meu histórico</button>
+    <button class="nav-item" data-view="enviar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20 21 12 4 4l2.5 6.5L14 12l-7.5 1.5L4 20Z"/></svg>Enviar minha aferição</button>
     <button class="nav-item" data-view="ubs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M9 5h6M4 10h16v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V10Z"/></svg>Quando procurar a UBS</button>
     <button class="nav-item" data-view="prevencao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-9C.7 8.1 3 4 7 4c2 0 3.8 1.1 5 3 1.2-1.9 3-3 5-3 4 0 6.3 4.1 4.5 8-2.5 4.65-9.5 9-9.5 9Z"/></svg>Prevenção e saúde</button>
+    <button class="nav-item" data-view="admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Administração</button>
     <div class="sidebar-foot">Este dashboard tem finalidade educativa e não substitui uma avaliação realizada por profissional de saúde.</div>
   </aside>
 
@@ -554,9 +611,9 @@
           <div class="txt"><h3>Diabetes e glicemia</h3><p>Conheça seus níveis de glicose</p></div>
           <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
         </div>
-        <div class="nav-card tint-teal" onclick="showView('historico')">
-          <div class="emoji">📊</div>
-          <div class="txt"><h3>Meu histórico</h3><p>Acompanhe suas avaliações</p></div>
+        <div class="nav-card tint-teal" onclick="showView('enviar')">
+          <div class="emoji">📝</div>
+          <div class="txt"><h3>Enviar minha aferição</h3><p>Registre seus valores, sem se identificar</p></div>
           <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
         </div>
         <div class="nav-card tint-amber" onclick="showView('ubs')">
@@ -728,58 +785,100 @@
       </div>
     </section>
 
-    <!-- ================= HISTORICO ================= -->
-    <section class="view" id="view-historico">
+    <!-- ================= ENVIAR AFERICAO ================= -->
+    <section class="view" id="view-enviar">
       <div class="page-head">
         <button class="back-btn" onclick="showView('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg>Início</button>
-        <span class="tag">Área individual (demonstração)</span>
-        <h1>Meu acompanhamento</h1>
-        <p class="sub">Aqui você encontra o histórico das suas avaliações realizadas nas ações de saúde da empresa. Dados fictícios, para fins de demonstração.</p>
+        <span class="tag">Envio anônimo</span>
+        <h1>Enviar minha aferição</h1>
+        <p class="sub">Informe os valores que você mediu. Não pedimos nome, matrícula nem qualquer dado que identifique você.</p>
       </div>
 
-      <div class="profile-card">
-        <div class="profile-top">
-          <div class="avatar">AS</div>
-          <div>
-            <h3>Ana Beatriz Souza</h3>
-            <span>Última avaliação em 10/10/2026</span>
+      <div class="calc-card" style="margin-top:6px;">
+        <h3>📝 Valores aferidos</h3>
+        <p class="hint">Preencha a pressão, a glicemia ou os dois. Você recebe uma orientação educativa logo após o envio.</p>
+        <div class="calc-fields">
+          <div class="calc-field">
+            <label for="env-sis">Sistólica (o número de cima)</label>
+            <input type="number" id="env-sis" inputmode="numeric" placeholder="Ex: 128">
+          </div>
+          <div class="calc-field">
+            <label for="env-dia">Diastólica (o número de baixo)</label>
+            <input type="number" id="env-dia" inputmode="numeric" placeholder="Ex: 82">
+          </div>
+          <div class="calc-field">
+            <label for="env-gli">Glicemia (mg/dL)</label>
+            <input type="number" id="env-gli" inputmode="numeric" placeholder="Ex: 105">
+          </div>
+          <div class="calc-field">
+            <label for="env-tipo">Tipo da glicemia</label>
+            <select id="env-tipo">
+              <option value="jejum">Em jejum</option>
+              <option value="casual">Casual</option>
+            </select>
+          </div>
+          <div class="calc-field full">
+            <label for="env-obs">Observações (opcional)</label>
+            <textarea id="env-obs" maxlength="200" rows="3" placeholder="Ex: medi depois de caminhar. Não escreva nome nem dados pessoais."></textarea>
           </div>
         </div>
-        <div class="profile-stats">
-          <div class="pstat"><div class="l">Última pressão</div><div class="v">138 x 86 mmHg</div></div>
-          <div class="pstat"><div class="l">Última glicemia</div><div class="v">110 mg/dL</div></div>
-        </div>
-      </div>
-
-      <div class="interpret-card">
-        <span class="tag2">Entenda seus resultados</span>
-        <p>Na sua última avaliação, sua pressão arterial foi de 138 x 86 mmHg e sua glicemia foi de 110 mg/dL. Esses resultados estão na faixa de atenção e merecem acompanhamento com um profissional de saúde.</p>
-        <p class="note">Lembre-se: uma avaliação isolada não é suficiente para estabelecer um diagnóstico. Vale procurar a UBS para conversar sobre esses resultados.</p>
-      </div>
-
-      <div class="section-title"><h2>Histórico de avaliações</h2></div>
-      <div class="filter-row" id="filtros-historico">
-        <button class="filter-chip" data-f="ultima">Última avaliação</button>
-        <button class="filter-chip" data-f="3m">Últimos 3 meses</button>
-        <button class="filter-chip active" data-f="6m">Últimos 6 meses</button>
-        <button class="filter-chip" data-f="tudo">Todo o histórico</button>
-      </div>
-
-      <div id="lista-historico"></div>
-
-      <div class="chart-card">
-        <h4>Evolução da pressão arterial e glicemia</h4>
-        <p style="font-size:12px;">Gráfico demonstrativo com dados fictícios</p>
-        <canvas id="graficoEvolucao" height="190"></canvas>
-        <div class="legend-row">
-          <div class="legend-dot"><i style="background:#B94A72"></i>Pressão sistólica</div>
-          <div class="legend-dot"><i style="background:#F3A8C4"></i>Glicemia</div>
-        </div>
+        <button class="calc-btn" id="env-btn" onclick="enviarAfericao()">Enviar</button>
+        <div class="calc-result" id="env-resultado"></div>
       </div>
 
       <div class="banner">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a4 4 0 1 0-4-4"/><path d="M12 19v2M5 12H3M21 12h-2M6.3 17.7l-1.4 1.4M19.1 6.3l-1.4 1.4M6.3 6.3 4.9 4.9M19.1 17.7l-1.4-1.4"/></svg>
-        <p>Esta é uma área individual e protegida. Em uma versão futura, o acesso a esses dados exigirá login ou outra forma segura de identificação, mesmo que o funcionário já tenha escaneado o QR Code público.</p>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <p>O envio é anônimo: nenhum nome ou identificador é solicitado. Por isso, não use o campo de observações para informar dados pessoais. Este conteúdo é educativo e não substitui uma avaliação realizada por profissional de saúde.</p>
+      </div>
+    </section>
+
+    <!-- ================= ADMINISTRACAO ================= -->
+    <section class="view" id="view-admin">
+      <div class="page-head">
+        <button class="back-btn" onclick="showView('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg>Início</button>
+        <span class="tag">Acesso restrito</span>
+        <h1>Administração</h1>
+        <p class="sub">Área para a equipe responsável acompanhar as aferições enviadas pelos funcionários.</p>
+      </div>
+
+      <div id="admin-login" class="calc-card" style="margin-top:6px;">
+        <h3>🔒 Entrar</h3>
+        <p class="hint">Digite a senha da administração para ver os registros enviados.</p>
+        <div class="calc-fields">
+          <div class="calc-field full">
+            <label for="admin-senha">Senha</label>
+            <input type="password" id="admin-senha" autocomplete="current-password" placeholder="Senha da administração">
+          </div>
+        </div>
+        <button class="calc-btn" id="admin-entrar" onclick="entrarAdmin()">Entrar</button>
+        <div class="calc-result" id="admin-msg"></div>
+        <div class="demo-note" id="demo-note" style="display:none;">
+          <strong>Modo demonstração.</strong> Os envios ficam apenas neste aparelho e a senha de teste é <strong>saude2026</strong>. Para uso real, conecte o banco de dados (a URL é configurada no início do script do arquivo) e defina uma senha própria.
+        </div>
+      </div>
+
+      <div id="admin-panel" style="display:none;">
+        <div class="admin-bar">
+          <div class="filter-row" id="admin-filtros" style="margin:0;">
+            <button class="filter-chip active" data-f="todos">Todos</button>
+            <button class="filter-chip" data-f="30">Últimos 30 dias</button>
+            <button class="filter-chip" data-f="7">Últimos 7 dias</button>
+          </div>
+          <div class="admin-actions">
+            <button class="btn-ghost" onclick="atualizarAdmin()">Atualizar</button>
+            <button class="btn-ghost" onclick="exportarCsv()">Exportar CSV</button>
+            <button class="btn-ghost" id="btn-seed" style="display:none;" onclick="gerarExemplos()">Gerar exemplos</button>
+            <button class="btn-ghost" id="btn-limpar" style="display:none;" onclick="limparDemo()">Limpar dados</button>
+            <button class="btn-ghost" onclick="sairAdmin()">Sair</button>
+          </div>
+        </div>
+        <div class="admin-stats" id="admin-stats"></div>
+        <div class="section-title"><h2>Registros enviados</h2><span id="admin-count"></span></div>
+        <div id="admin-lista"></div>
+        <div class="banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+          <p>Os registros são anônimos e informados pelo próprio funcionário, sem conferência. As faixas exibidas são educativas e não representam diagnóstico. Trate estes dados com confidencialidade.</p>
+        </div>
       </div>
     </section>
 
@@ -820,6 +919,13 @@
       </div>
 
       <div class="section-title"><h2>UBS próximas em Maceió, AL</h2></div>
+      <div class="map-card">
+        <iframe src="https://www.google.com/maps?q=UBS+Unidade+B%C3%A1sica+de+Sa%C3%BAde+Macei%C3%B3+AL&z=12&output=embed" title="Mapa das UBS de Maceió" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <div class="map-buttons">
+        <a class="map-btn primary" href="https://www.google.com/maps/search/UBS+perto+de+mim" target="_blank" rel="noopener">Ver UBS perto de mim</a>
+        <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=UBS+Macei%C3%B3+AL" target="_blank" rel="noopener">Abrir no Google Maps</a>
+      </div>
       <div id="lista-ubs"></div>
       <p class="map-note">Lista de referência com algumas UBS de Maceió cadastradas no Google Maps. Confirme sempre o endereço, horário de funcionamento e a UBS de referência do seu bairro antes de se deslocar.</p>
 
@@ -844,8 +950,9 @@
     <div class="bottom-nav">
       <button class="bn-item active" data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11.5 12 4l8 7.5M6 10v9h5v-5h2v5h5v-9"/></svg>Início</button>
       <button class="bn-item" data-view="hipertensao" data-hub="saude"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 6 4-14 2 8h6"/></svg>Saúde</button>
-      <button class="bn-item" data-view="historico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5m5 14V9m5 10V12m5 7V6"/></svg>Histórico</button>
+      <button class="bn-item" data-view="enviar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20 21 12 4 4l2.5 6.5L14 12l-7.5 1.5L4 20Z"/></svg>Enviar</button>
       <button class="bn-item" data-view="ubs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M9 5h6M4 10h16v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V10Z"/></svg>Orientações</button>
+      <button class="bn-item" data-view="admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Admin</button>
     </div>
   </main>
 </div>
@@ -948,50 +1055,6 @@ function toggleAcc(head){
   if(!wasOpen) item.classList.add('open');
 }
 
-/* ---------------- Histórico fictício ---------------- */
-const historicoDados=[
-  {data:'10/09/2026', sist:145, dia:92, gli:118, obs:'Avaliação realizada'},
-  {data:'10/10/2026', sist:138, dia:86, gli:110, obs:'Acompanhamento'},
-  {data:'12/11/2025', sist:150, dia:94, gli:124, obs:'Avaliação realizada'},
-  {data:'15/07/2025', sist:132, dia:84, gli:102, obs:'Acompanhamento'},
-  {data:'20/03/2025', sist:128, dia:80, gli:98, obs:'Avaliação realizada'},
-];
-let chartRef=null;
-function renderHistorico(filtro){
-  let dados=historicoDados;
-  if(filtro==='ultima') dados=historicoDados.slice(0,1);
-  else if(filtro==='3m') dados=historicoDados.slice(0,2);
-  else if(filtro==='6m') dados=historicoDados.slice(0,3);
-  const lista=document.getElementById('lista-historico');
-  lista.innerHTML=dados.map(d=>`
-    <div class="history-item">
-      <div class="hi-top"><span class="hi-date">${d.data}</span><span class="hi-obs">${d.obs}</span></div>
-      <div class="hi-vals">
-        <div class="hi-val"><div class="l">Pressão</div><div class="v">${d.sist} x ${d.dia} mmHg</div></div>
-        <div class="hi-val"><div class="l">Glicemia</div><div class="v">${d.gli} mg/dL</div></div>
-      </div>
-    </div>
-  `).join('');
-
-  const ordenado=[...dados].reverse();
-  const ctx=document.getElementById('graficoEvolucao');
-  if(chartRef) chartRef.destroy();
-  chartRef=new Chart(ctx,{
-    type:'line',
-    data:{
-      labels:ordenado.map(d=>d.data),
-      datasets:[
-        {label:'Pressão sistólica', data:ordenado.map(d=>d.sist), borderColor:'#B94A72', backgroundColor:'rgba(185,74,114,0.08)', tension:.35, fill:true, pointRadius:4},
-        {label:'Glicemia', data:ordenado.map(d=>d.gli), borderColor:'#F3A8C4', backgroundColor:'rgba(243,168,196,0.15)', tension:.35, fill:true, pointRadius:4}
-      ]
-    },
-    options:{
-      plugins:{legend:{display:false}},
-      scales:{y:{beginAtZero:false, grid:{color:'#FCE4EE'}}, x:{grid:{display:false}}},
-      responsive:true
-    }
-  });
-}
 /* ---------------- Calculadora de pressão arterial ---------------- */
 function categoriaSistolica(s){
   if(s<120) return 0;
@@ -1103,14 +1166,267 @@ if(listaUbs){
   `).join('');
 }
 
-renderHistorico('6m');
-document.querySelectorAll('.filter-chip').forEach(chip=>{
-  chip.addEventListener('click',()=>{
-    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+/* ---------------- Aferições anônimas e administração ---------------- */
+/* Para uso real, cole aqui a URL do aplicativo web do Google Apps Script.
+   Enquanto estiver vazia, o site funciona em modo demonstração (dados só neste aparelho). */
+const CONFIG = { BACKEND_URL: '' };
+const DEMO_SENHA = 'saude2026';
+const LS_KEY = 'sef_registros_demo';
+const modoDemo = !CONFIG.BACKEND_URL;
+
+let adminSenha = null;
+let adminRegistros = [];
+let adminFiltro = 'todos';
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function lerDemo(){
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch(e){ return []; }
+}
+function salvarDemo(lista){
+  try { localStorage.setItem(LS_KEY, JSON.stringify(lista)); return true; } catch(e){ return false; }
+}
+function classificarGlicemia(v, tipo){
+  if(tipo === 'jejum'){
+    if(v < 100) return {label:'Normal', cor:'#2F9E68', nivel:0};
+    if(v < 126) return {label:'Atenção', cor:'#E3A008', nivel:1};
+    return {label:'Merece avaliação', cor:'#DD5B41', nivel:2};
+  }
+  if(v < 140) return {label:'Dentro do esperado', cor:'#2F9E68', nivel:0};
+  if(v < 200) return {label:'Atenção', cor:'#E3A008', nivel:1};
+  return {label:'Merece avaliação', cor:'#DD5B41', nivel:2};
+}
+function numOuNulo(v){
+  const n = parseFloat(v);
+  return isFinite(n) ? n : null;
+}
+
+/* ----- Envio pelo funcionário (anônimo) ----- */
+async function enviarAfericao(){
+  const sis = numOuNulo(document.getElementById('env-sis').value);
+  const dia = numOuNulo(document.getElementById('env-dia').value);
+  const gli = numOuNulo(document.getElementById('env-gli').value);
+  const tipo = document.getElementById('env-tipo').value === 'casual' ? 'casual' : 'jejum';
+  const obs = document.getElementById('env-obs').value.trim().slice(0, 200);
+  const box = document.getElementById('env-resultado');
+  const btn = document.getElementById('env-btn');
+
+  const mostrarErro = msg => { box.className = 'calc-result show'; box.innerHTML = '<p>' + esc(msg) + '</p>'; };
+
+  const temPressao = sis !== null || dia !== null;
+  if(!temPressao && gli === null) return mostrarErro('Preencha a pressão, a glicemia ou os dois.');
+  if(temPressao){
+    if(sis === null || dia === null) return mostrarErro('Para enviar a pressão, preencha a sistólica e a diastólica.');
+    if(sis < 50 || sis > 300 || dia < 30 || dia > 200) return mostrarErro('Confira os valores da pressão: eles parecem fora do esperado para uma aferição.');
+    if(sis <= dia) return mostrarErro('A sistólica (número de cima) deve ser maior que a diastólica (número de baixo).');
+  }
+  if(gli !== null && (gli < 20 || gli > 800)) return mostrarErro('Confira o valor da glicemia: ele parece fora do esperado para uma aferição.');
+
+  const registro = {
+    ts: new Date().toISOString(),
+    sis: temPressao ? Math.round(sis) : null,
+    dia: temPressao ? Math.round(dia) : null,
+    gli: gli !== null ? Math.round(gli) : null,
+    tipo: tipo,
+    obs: obs
+  };
+
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  try {
+    if(modoDemo){
+      const lista = lerDemo(); lista.push(registro);
+      if(!salvarDemo(lista)) throw new Error('storage');
+    } else {
+      await fetch(CONFIG.BACKEND_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+        body: JSON.stringify({action: 'submit', registro: registro})
+      });
+    }
+  } catch(e){
+    btn.disabled = false; btn.textContent = 'Enviar';
+    return mostrarErro('Não foi possível enviar agora. Verifique sua conexão e tente novamente.');
+  }
+  btn.disabled = false; btn.textContent = 'Enviar';
+
+  let html = '<p><strong>Envio recebido. Obrigado!</strong></p>';
+  if(registro.sis !== null){
+    const f = faixasPressao[Math.max(categoriaSistolica(registro.sis), categoriaDiastolica(registro.dia))];
+    html += '<div class="badge-row"><span class="badge" style="background:' + f.cor + '"><i></i>' + esc(f.label) + '</span></div>' +
+            '<p>' + registro.sis + ' x ' + registro.dia + ' mmHg. ' + esc(f.texto) + '</p>';
+  }
+  if(registro.gli !== null){
+    const g = classificarGlicemia(registro.gli, registro.tipo);
+    html += '<div class="badge-row"><span class="badge" style="background:' + g.cor + '"><i></i>' + esc(g.label) + '</span></div>' +
+            '<p>' + registro.gli + ' mg/dL (' + (registro.tipo === 'jejum' ? 'em jejum' : 'casual') + ').</p>';
+  }
+  html += '<p class="note">Uma única medição não é suficiente para estabelecer um diagnóstico. Este resultado é educativo, vale conversar com um profissional de saúde ou procurar a UBS se tiver dúvidas.</p>';
+  box.className = 'calc-result show'; box.innerHTML = html;
+  ['env-sis','env-dia','env-gli','env-obs'].forEach(id => document.getElementById(id).value = '');
+}
+
+/* ----- Administração ----- */
+async function buscarRegistros(senha){
+  if(modoDemo){
+    if(senha !== DEMO_SENHA) throw new Error('senha');
+    return lerDemo();
+  }
+  let res;
+  try {
+    res = await fetch(CONFIG.BACKEND_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action: 'list', senha: senha})
+    });
+  } catch(e){ throw new Error('rede'); }
+  let data;
+  try { data = await res.json(); } catch(e){ throw new Error('rede'); }
+  if(!data || !data.ok) throw new Error(data && data.erro === 'senha' ? 'senha' : 'rede');
+  return Array.isArray(data.registros) ? data.registros : [];
+}
+function adminMsg(texto){
+  const m = document.getElementById('admin-msg');
+  m.className = 'calc-result show'; m.innerHTML = '<p>' + esc(texto) + '</p>';
+}
+async function entrarAdmin(){
+  const senha = document.getElementById('admin-senha').value;
+  if(!senha) return adminMsg('Digite a senha para entrar.');
+  const btn = document.getElementById('admin-entrar');
+  btn.disabled = true; btn.textContent = 'Verificando...';
+  try {
+    adminRegistros = await buscarRegistros(senha);
+    adminSenha = senha;
+    document.getElementById('admin-senha').value = '';
+    document.getElementById('admin-msg').className = 'calc-result';
+    document.getElementById('admin-login').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    document.getElementById('btn-seed').style.display = modoDemo ? '' : 'none';
+    document.getElementById('btn-limpar').style.display = modoDemo ? '' : 'none';
+    renderAdmin();
+  } catch(e){
+    adminMsg(e.message === 'senha' ? 'Senha incorreta.' : 'Não foi possível conectar ao servidor. Tente novamente em instantes.');
+  }
+  btn.disabled = false; btn.textContent = 'Entrar';
+}
+async function atualizarAdmin(){
+  if(adminSenha === null) return;
+  try { adminRegistros = await buscarRegistros(adminSenha); renderAdmin(); }
+  catch(e){ alert('Não foi possível atualizar agora.'); }
+}
+function sairAdmin(){
+  adminSenha = null; adminRegistros = [];
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('admin-login').style.display = 'block';
+  document.getElementById('admin-lista').innerHTML = '';
+}
+function registrosFiltrados(){
+  const lista = adminRegistros.map(r => ({
+    ts: String(r.ts || ''),
+    sis: numOuNulo(r.sis), dia: numOuNulo(r.dia), gli: numOuNulo(r.gli),
+    tipo: r.tipo === 'casual' ? 'casual' : 'jejum',
+    obs: String(r.obs || '').slice(0, 200)
+  }));
+  lista.sort((a, b) => new Date(b.ts) - new Date(a.ts));
+  if(adminFiltro === 'todos') return lista;
+  const limite = Date.now() - parseInt(adminFiltro, 10) * 86400000;
+  return lista.filter(r => new Date(r.ts).getTime() >= limite);
+}
+function faixaPressaoDe(r){
+  if(r.sis === null || r.dia === null) return null;
+  return faixasPressao[Math.max(categoriaSistolica(r.sis), categoriaDiastolica(r.dia))];
+}
+function renderAdmin(){
+  const lista = registrosFiltrados();
+  const comPressaoAtencao = lista.filter(r => r.sis !== null && Math.max(categoriaSistolica(r.sis), categoriaDiastolica(r.dia)) >= 2).length;
+  const comGlicemiaAtencao = lista.filter(r => r.gli !== null && classificarGlicemia(r.gli, r.tipo).nivel >= 1).length;
+  document.getElementById('admin-stats').innerHTML =
+    '<div class="stat-tile"><div class="n">' + lista.length + '</div><div class="l">Envios no período</div></div>' +
+    '<div class="stat-tile"><div class="n">' + comPressaoAtencao + '</div><div class="l">Pressão a partir de 140 x 90</div></div>' +
+    '<div class="stat-tile"><div class="n">' + comGlicemiaAtencao + '</div><div class="l">Glicemia em atenção ou acima</div></div>';
+  document.getElementById('admin-count').textContent = lista.length + (lista.length === 1 ? ' registro' : ' registros');
+
+  const el = document.getElementById('admin-lista');
+  if(!lista.length){
+    el.innerHTML = '<div class="info-card"><p>Nenhum registro neste período ainda.</p></div>';
+    return;
+  }
+  el.innerHTML = lista.map(r => {
+    const d = new Date(r.ts);
+    const data = isNaN(d) ? 'Data não informada' : d.toLocaleString('pt-BR', {dateStyle:'short', timeStyle:'short'});
+    const fp = faixaPressaoDe(r);
+    const fg = r.gli !== null ? classificarGlicemia(r.gli, r.tipo) : null;
+    return '<div class="rec-item">' +
+      '<div class="rec-top"><span class="rec-date">' + esc(data) + '</span></div>' +
+      '<div class="rec-vals">' +
+        '<div class="rec-val"><div class="l">Pressão</div><div class="v">' + (fp ? esc(r.sis) + ' x ' + esc(r.dia) + ' mmHg' : 'Não informada') + '</div>' +
+          (fp ? '<span class="pill" style="background:' + fp.cor + '">' + esc(fp.label) + '</span>' : '') + '</div>' +
+        '<div class="rec-val"><div class="l">Glicemia (' + (r.tipo === 'jejum' ? 'jejum' : 'casual') + ')</div><div class="v">' + (fg ? esc(r.gli) + ' mg/dL' : 'Não informada') + '</div>' +
+          (fg ? '<span class="pill" style="background:' + fg.cor + '">' + esc(fg.label) + '</span>' : '') + '</div>' +
+      '</div>' +
+      (r.obs ? '<div class="rec-obs">' + esc(r.obs) + '</div>' : '') +
+    '</div>';
+  }).join('');
+}
+function celulaCsv(v){
+  let s = String(v == null ? '' : v);
+  if(/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return '"' + s.replace(/"/g, '""') + '"';
+}
+function exportarCsv(){
+  const lista = registrosFiltrados();
+  const linhas = [['Data','Sistólica','Diastólica','Glicemia','Tipo da glicemia','Faixa da pressão','Faixa da glicemia','Observações']];
+  lista.forEach(r => {
+    const d = new Date(r.ts);
+    const fp = faixaPressaoDe(r);
+    const fg = r.gli !== null ? classificarGlicemia(r.gli, r.tipo) : null;
+    linhas.push([
+      isNaN(d) ? '' : d.toLocaleString('pt-BR'),
+      r.sis === null ? '' : r.sis, r.dia === null ? '' : r.dia, r.gli === null ? '' : r.gli,
+      r.tipo === 'jejum' ? 'Jejum' : 'Casual',
+      fp ? fp.label : '', fg ? fg.label : '', r.obs
+    ]);
+  });
+  const csv = '﻿' + linhas.map(l => l.map(celulaCsv).join(';')).join('\r\n');
+  const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'afericoes-saude-que-se-entende.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function gerarExemplos(){
+  if(!modoDemo) return;
+  const base = [
+    [118,76,92,'jejum',''],[132,84,104,'jejum','Medi após o café'],[145,92,118,'casual',''],
+    [126,82,98,'jejum',''],[158,98,141,'casual','Sem dormir bem'],[110,70,88,'jejum',''],
+    [138,86,110,'jejum',''],[172,104,215,'casual','']
+  ];
+  const lista = lerDemo();
+  base.forEach((b, i) => lista.push({
+    ts: new Date(Date.now() - i * 3.2 * 86400000).toISOString(),
+    sis: b[0], dia: b[1], gli: b[2], tipo: b[3], obs: b[4]
+  }));
+  salvarDemo(lista);
+  atualizarAdmin();
+}
+function limparDemo(){
+  if(!modoDemo) return;
+  if(confirm('Apagar todos os registros de demonstração deste aparelho?')){
+    salvarDemo([]); atualizarAdmin();
+  }
+}
+document.querySelectorAll('#admin-filtros .filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#admin-filtros .filter-chip').forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
-    renderHistorico(chip.dataset.f);
+    adminFiltro = chip.dataset.f;
+    renderAdmin();
   });
 });
+document.getElementById('admin-senha').addEventListener('keydown', e => { if(e.key === 'Enter') entrarAdmin(); });
+if(modoDemo){ document.getElementById('demo-note').style.display = 'block'; }
+
 </script>
 </body>
 </html>
